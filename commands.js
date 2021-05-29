@@ -1,6 +1,6 @@
 const { CommandHandler, Command } = require("string-commands");
 const Msg = require("./Msg");
-
+const db = require("./usermanager");
 
 
 module.exports = function (serv, Parser) {
@@ -46,6 +46,7 @@ module.exports = function (serv, Parser) {
 			try {
 				serv.mplayer.play(src);
 			} catch (e) {
+				serv.mplayer.queue.shift();
 				serv.chat(new Msg(e.toString(), "red"));
 			};
 		},
@@ -55,7 +56,7 @@ module.exports = function (serv, Parser) {
 		aliases: ["pt"],
 		usage: [],
 		run: (args, client) => {
-			let src = "https://www.youtube.com/watch?v=FtutLA63Cp8";
+			let src = "https://www.youtube.com/watch?v=UnIhRpIT7nc";
 
 			serv.chat(new Msg("> Processing video (playtest)...", "gray", src));
 			try {
@@ -77,6 +78,14 @@ module.exports = function (serv, Parser) {
 		name: "stop",
 		run: () => {
 			serv.mplayer.stop();
+		},
+	});
+	handler.addCommand({
+		name: "vanish",
+		run: (args, client) => {
+			client.db.vanish = !client.db.vanish;
+			client.chat(client.db.vanish ? new Msg("> You are now hidden", "red") : new Msg("> You are now seen", "green"));
+			db.save(client.username, client.db);
 		},
 	});
 	handler.addCommand(new Command({

@@ -10,14 +10,15 @@ function conv(f) {
 
 module.exports = class PlayerEntity {
 	constructor(client, writeAll, writeAllExcept) {
-		if (!client.pos) client.pos = { x: 0, y: 0, z: 0, yaw: 0, pitch: 0 }
+		if (!client.pos) client.pos = { x: 10, y: 65, z: 8, yaw: 90, pitch: 0 }
 		this.client = client;
 		this.writeAll = writeAll;
 		this.writeAllExcept = writeAllExcept;
+		this.vanish = client.db.vanish;
 
 		this.sendStuff();
-		this.spawnClient();
-		this.spawnEntity();
+		if(!this.vanish) this.spawnClient();
+		if(!this.vanish) this.spawnEntity();
 
 		client.on('look', (packet) => {
 			this.lookTo(packet.yaw, packet.pitch);
@@ -25,6 +26,9 @@ module.exports = class PlayerEntity {
 
 		client.on('position', (packet) => {
 			this.moveTo(packet.x, packet.y, packet.z);
+			if(packet.y < 61) client.write("position", {
+				x: 10, y: 65, z: 8, yaw: 90, pitch: 0, flags: 0x00, teleportId: 1
+			});
 		})
 
 		client.on('position_look', (packet) => {
@@ -82,7 +86,7 @@ module.exports = class PlayerEntity {
 			UUID: this.client.uuid,
 			name: this.client.username,
 			properties: [], // todo: implement skins
-			gamemode: 1,
+			gamemode: 2,
 			ping: 1,
 			displayName: null
 		}

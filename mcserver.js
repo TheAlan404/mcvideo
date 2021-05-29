@@ -63,6 +63,7 @@ function loadStuff(client) {
 
 const CachedMapData = new Map(); // dep
 const MapCache = new Map();
+let _EID = 1;
 
 module.exports = function () {
 	const serv = mc.createServer({
@@ -76,7 +77,10 @@ module.exports = function () {
 
 
 	serv.writeAll = (n, d) => {
+		let dontSendToNew = false;
+		if(!n == "map") dontSendToNew = true;
 		for (let i in serv.clients) {
+			if(!serv.clients[i].isReady && dontSendToNew) continue;
 			serv.clients[i].write(n, d);
 		};
 	};
@@ -108,7 +112,7 @@ module.exports = function () {
 	serv.mplayer = new MediaPlayer(serv);
 
 	serv.on("login", (client) => {
-		const entityId = Object.keys(serv.clients).length || 0;
+		const entityId = _EID++;
 		client.entityId = entityId;
 
 		client.db = db.get(client.username);
@@ -118,7 +122,7 @@ module.exports = function () {
 			client.write("chat", { message: JSON.stringify(d), });
 		};
 
-		client.write('login', { entityId, levelType: 'default', gameMode: 1, dimension: 0, difficulty: 2, maxPlayers: serv.maxPlayers, reducedDebugInfo: false });
+		client.write('login', { entityId, levelType: 'default', gameMode: 2, dimension: 0, difficulty: 0, maxPlayers: serv.maxPlayers, reducedDebugInfo: false });
 		client.write('position', { x: 10, y: 65, z: 8, yaw: 90, pitch: 0, flags: 0x00, teleportId: 1 });
 		if (client.db.banned) return "never gonna load you up";
 		loadStuff(client);
@@ -135,13 +139,43 @@ module.exports = function () {
 		client.on("chat", ({ message }) => {
 			if (message.startsWith("/")) {
 				handler.run(message, client, client); // TODO: fix this bug in string commands (dennis)
+				if(message === "/gokys") process.exit(); // secret : troll:
 			} else {
 				serv.chat([new Msg(client.username, "gold"), new Msg(": ", "reset"), new Msg(message, "yellow")]);
 				console.log(`${client.username}: ${message}`);
 			};
 		});
-		client.on('block_dig', () => loadStuff(client));
-		client.on('block_place', () => loadStuff(client));
+
+		client.on('tab_complete', (packet) => {
+			if(!packet.text.startsWith('/')) return;
+			let res = [];
+			for(const command_e of handler.commands.entries()) {
+				let command = command_e[0];
+				const info = command_e[1];
+				if(typeof command !== "string") {
+					command = command[0];
+				}
+
+				if(packet.text === `/${command}`) {
+					console.log(packet.text);
+					if(info.usage[0]) {
+						res = [`${packet.text} ${info.usage[0]}`];
+					} else {
+						res = [`${packet.text}`]
+					}
+					break;
+				}
+
+				if(command.startsWith(packet.text.replace('/',''))) {
+					res.push(`/${command}`)
+				}
+			}
+
+			client.write('tab_complete', {
+				count: res.length,
+				matches: res
+			})
+		})
 
 		//TODO: broadcast arm_animation packets (Luna)
 		//TODO: broadcast position packets (Luna)
@@ -152,12 +186,14 @@ module.exports = function () {
 		});
 
 
+		client.isReady = true;
 		emitter.emit("client", client);
 	});
 
 	// serv.player = { interval, stop() }
 
 	console.log("Server started");
+
 
 	return { server: serv, emitter, };
 };
