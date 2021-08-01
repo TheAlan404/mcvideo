@@ -16,6 +16,7 @@
     "ffmpeg-static": "^4.3.0",
     "minecraft-protocol": "^1.25.0",
     "mineflayer": "^3.7.0",
+    "nbs.js": "^1.0.2",
     "nmp-player": "^1.1.0",
     "node-fetch": "^2.6.1",
     "protodef": "^1.13.0",
@@ -24,6 +25,6 @@
     "string-commands": "github:thealan404/string-commands",
     "uuid": "^8.3.2",
     "vec3": "^0.1.7",
-    "ytdl-core": "^4.8.1"
+    "ytdl-core": "^4.9.0"
   }
 }

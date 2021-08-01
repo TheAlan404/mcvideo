@@ -6,6 +6,39 @@ const Msg = require("./Msg.js");
 const BossBar = require('./bossbar.js')
 let { server, emitter, } = createServer();
 
+
+if(!fs.existsSync("./chunk") && fs.existsSync("./example")) process.chdir("./example");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 server.debug_bossbar = new BossBar(server, {
 	writeAll: server.writeAll,
 	title: "Loading...",

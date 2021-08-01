@@ -13,9 +13,10 @@ const EventEmitter = require("events");
 const { createGzip, createGunzip } = require('zlib');
 const ByteBuffer = require("bytebuffer");
 const Cacher = require("./cacher");
+const { SongPlayer } = require("nmp-player");
 
 const PNGHEADER = Buffer.from("89 50 4E 47 0D 0A 1A 0A".split(" ").join(""), "hex");
-const FPS = 30;
+const FPS = 20;
 
 /*
 class VideoPlayer {
@@ -43,6 +44,8 @@ class DisplayList {
 	};
 };
 
+let startTime
+
 
 class MediaPlayer extends EventEmitter {
 	constructor(serv, opts = {}) {
@@ -59,6 +62,7 @@ class MediaPlayer extends EventEmitter {
 		this.queue = [];
 	};
 	async start() {
+		this.serv.chat(new Msg(`> Processing complete. Took ${Date.now() - startTime}ms`, "gray"));
 		console.debug('checking status')
 		if (this.status == "proc") return this.serv.chat(new Msg("> Error: the video is still processing", "red"));
 		if (this.status == "play") return this.serv.chat(new Msg("> Error: the video is still playing", "red"));
@@ -78,6 +82,18 @@ class MediaPlayer extends EventEmitter {
 			this.frames[0] = null;
 			this.frames.shift();
 		}, 1000 / FPS);
+		if(globalThis.$lagtrain) {
+			let songplayer = new SongPlayer()
+
+			songplayer._note = (packet) => {
+				packet.x = 0
+				packet.y = 0
+				packet.z = 0
+				this.serv.writeAll('sound_effect', packet)
+			}
+
+			songplayer.play('./Lagtrain.nbs')
+		};
 	};
 	stop() {
 		if (this.ffmpegProcess) {
@@ -181,6 +197,7 @@ class MediaPlayer extends EventEmitter {
 		});
 	};
 	createVideoStream(src) {
+		startTime = Date.now();
 		let sourceStream = this.getSource(src);
 		this.ffmpegProcess = spawn(ffPath, [
 			"-i", "-",

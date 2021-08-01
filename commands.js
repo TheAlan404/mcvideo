@@ -52,6 +52,18 @@ module.exports = function (serv, Parser) {
 		},
 	}));
 	handler.addCommand(new Command({
+		name: "lagtrain",
+		run: (args, client) => {
+			serv.chat(new Msg("> Loading...", "gray"));
+			try {
+				serv.mplayer.play("https://www.youtube.com/watch?v=UnIhRpIT7nc");
+				globalThis.$lagtrain = true;
+			} catch (e) {
+				serv.chat(new Msg(e.toString(), "red"));
+			};
+		},
+	}));
+	handler.addCommand(new Command({
 		name: "playtest",
 		aliases: ["pt"],
 		usage: [],
