@@ -86,9 +86,9 @@ class MediaPlayer extends EventEmitter {
 			let songplayer = new SongPlayer()
 
 			songplayer._note = (packet) => {
-				packet.x = 10
-				packet.y = 65
-				packet.z = 8
+				packet.x = 10 * 8
+				packet.y = 65 * 8
+				packet.z = 8 * 8
 				this.serv.writeAll('sound_effect', packet)
 			}
 
