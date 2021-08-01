@@ -86,9 +86,9 @@ class MediaPlayer extends EventEmitter {
 			let songplayer = new SongPlayer()
 
 			songplayer._note = (packet) => {
-				packet.x = 0
-				packet.y = 0
-				packet.z = 0
+				packet.x = 10
+				packet.y = 65
+				packet.z = 8
 				this.serv.writeAll('sound_effect', packet)
 			}
 
@@ -170,12 +170,12 @@ class MediaPlayer extends EventEmitter {
 	play(src = this.queue[0]) {
 		if(this.status !== "stall") return;
 		if (this.ffmpegProcess) return this.serv.chat(new Msg("> FFMPEG is currently processing. Abort using /stop or wait.", "red"));
-		let videoID = ytdl.getVideoID(src);
-		if (this.hasInCache(videoID)) {
-			this.loadFromCache(videoID);
-			return;
-		};
-		this.createVideoStream(videoID);
+		//let videoID = ytdl.getVideoID(src);
+		//if (this.hasInCache(videoID)) {
+		//	this.loadFromCache(videoID);
+		//	return;
+		//};
+		this.createVideoStream(src);
 	};
 	addToQueue(str){
 		return;

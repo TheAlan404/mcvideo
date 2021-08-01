@@ -133,7 +133,7 @@ module.exports = function () {
 			};
 		})
 
-		serv.chat([new Msg(client.username, "gold"), new Msg(" joined.", "yellow")]);
+		//serv.chat([new Msg(client.username, "gold"), new Msg(" joined.", "yellow")]);
 		console.log(`${client.username} joined.`);
 
 		client.on("chat", ({ message }) => {

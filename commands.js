@@ -56,7 +56,7 @@ module.exports = function (serv, Parser) {
 		run: (args, client) => {
 			serv.chat(new Msg("> Loading...", "gray"));
 			try {
-				serv.mplayer.play("https://www.youtube.com/watch?v=UnIhRpIT7nc");
+				serv.mplayer.play("/tmp/lagtrain.mp4");
 				globalThis.$lagtrain = true;
 			} catch (e) {
 				serv.chat(new Msg(e.toString(), "red"));
